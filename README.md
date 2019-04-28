@@ -1,4 +1,4 @@
-# ELK的安装与使用（CentOSDK）
+# ELK的安装与使用（CentOS）
 
 ## 环境准备
 
@@ -51,6 +51,7 @@ OpenJDK 64-Bit Server VM (build 25.201-b09, mixed mode)
 依次修改下面两个文件，使用#注释掉root。
 
 `/etc/vsftpd/ftpusers`
+
 `/etc/vsftpd/user_list`
 
 重启vsftpd
@@ -249,20 +250,23 @@ log_format json '{"@timestamp":"$time_iso8601",'
 ```
 
 具体含义如下：
-`timestamp`：日志的时间戳。
-`host`：nginx所在主机IP。
-`request_method`：请求类型（POST，GET）
-`clientip`：前端ip。
-`size`：请求大小。
-`responsetime`：请求响应时间。
-`upstreamtime`：后端相应请求时间。
-`upstreamhost`：后端服务器IP。
-`http_host`：域名。
-`url`：请求的接口。
-`xff`：用户IP。
-`referer`：完整请求地址。
-`agent`：客户端类型。
-`status`：状态码。
+
+属性|含义
+-|-
+timestamp|日志的时间戳
+host|nginx所在主机IP
+request_method|请求类型（POST，GET）
+clientip|前端ip
+size|请求大小
+responsetime|请求响应时间
+upstreamtime|后端相应请求时间
+upstreamhost|后端服务器IP
+http_host|域名
+url|请求的接口
+xff|用户IP
+referer|完整请求地址
+agent|客户端类型
+status|状态码
 
 继续在Nginx配置文件增加或者更改为如下内容，指定生成日志文件：
 
@@ -311,11 +315,13 @@ output {
 ### 使用Kibana查看日志
 
 使用浏览器访问IP:9200打开Kibana。
+
 在左侧导航点管理(1)，子菜单里的索引模式(2)用于创建索引，索引管理(3)可以查看已创建的索引。
 
 ![001.png](screenshots/001.png)
 
 点击索引模式，右侧可以创建索引模式。第一次在这里可能会如图显示找不到Elasticsearch数据，可以访问一下Nginx服务IP:80产生一些日志数据。
+
 再次刷新就会显示Logstash创建的`nginx-access`索引，输入匹配条件`nginx-access*`点击下一步。时间筛选选择`@timestamp`，点击创建索引模式完成创建。
 
 ![002.png](screenshots/002.png)
@@ -365,6 +371,7 @@ output.logstash:
 上面的配置定义了Filebeat读取的日志文件，设置的`logtype`用于后续Logstash区分不同的日志，在不同机器上的Filebeat可以配置不同的值用以区分。最后配置Logstash的IP和端口。
 
 **注意原有的配置，避免冲突可以注释掉重复的。**
+
 配置里默认发送至Elasticsearch而不是Logstash，需要用#注释掉下面这句：
 
 ```yml
@@ -393,7 +400,7 @@ output.logstash:
 
 ```bash
 [root@localhost etc]# nano /etc/logstash/conf.d/filebeat1.conf
- ```
+```
 
 写入如下配置：
 
